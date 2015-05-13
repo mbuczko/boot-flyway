@@ -4,7 +4,7 @@
            [org.flywaydb.core.internal.util.jdbc DriverDataSource]
            [org.flywaydb.core.internal.info MigrationInfoDumper]))
 
-(def ^:private supported-config-keys [:baseline-version
+(def ^:private supported-config-keys [:baseline-version-as-string
                                       :baseline-description
                                       :locations
                                       :table
