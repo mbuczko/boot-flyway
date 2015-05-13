@@ -1,38 +1,52 @@
 (ns mbuczko.boot-flyway
   {:boot/export-tasks true}
   (:require
-   [mbuczko.flyway :as flyway]
-   [boot.pod       :as pod]
-   [boot.core      :as core]
-   [boot.util      :as util]))
+   [boot.pod  :as pod]
+   [boot.core :as core]
+   [boot.util :as util]))
 
-(def ^:private fly-deps '[[org.flywaydb/flyway-core "3.1"]])
+(def fly-deps '[[org.flywaydb/flyway-core "3.1"]])
+
+
 
 (core/deftask flyway
   "Apply/rollback flyway migrations"
-  [d database  DATABASE   str  "database jdbc url"
+  [d driver    DRIVER     str  "database driver"
+   j url       URL        str  "jdbc url"
+   u user      USER       str  "user to connect with"
+   p password  PASS       str  "password to connect with"
+   c clean                bool "Drop all objects in the configured schemas."
+   i info                 bool "Prints the details and status information about all the migrations"
+   v validate             bool "Validates the applied migrations against the available ones"
+   b baseline             bool "Baselines an existing database, excluding all migrations upto and including baselineVersion"
+   r repair               bool "Repair the metadata table"
    g generate  MIGRATION  str  "name of generated migration."
-   m migrate              bool "Run all the migrations not applied so far."
-   r rollback             int  "number of migrations to be immediately rolled back."
-   l list-unapplied       bool "List all migrations to be applied."
-   a list-applied         bool "List migration already applied"]
+   o options   OPTIONS    edn  "additional flyway options"]
   
-  (let [worker  (pod/make-pod (update-in (core/get-env) [:dependencies] into fly-deps))
-        command (if rollback :rollback (if migrate :migrate))]
+  (let [worker (pod/make-pod (update-in (core/get-env) [:dependencies] into fly-deps))
+        dataset {:driver driver
+                 :url url
+                 :user user
+                 :password password}
+        config (merge options dataset)]
 
     (if generate
       (let [curr (.format (java.text.SimpleDateFormat. "yyyyMMddhhmmss") (java.util.Date.))
-            name (str "migrations/" curr "-" generate)]
-        (spit (str name ".up.sql") "-- migration to be applied\n\n")
-        (spit (str name ".down.sql") "-- rolling back receipe\n\n")
+            name (str "db/migration/v" curr "__" generate ".sql")]
+        (spit name "-- migration to be applied\n\n")
+        (util/info "Created %s\n" name))
 
-        (util/info "Created %s\n" name)))
-
-    (if (or list-unapplied command)
-      (if-not database
-        (util/info "No database set\n")
+      (if-not (and driver url)
+        (util/info "No driver or url set\n")
         (pod/with-eval-in worker
+          (require '[mbuczko.flyway :as flyway])
           
-
-
-          )))))
+          (let [fw (flyway/flyway ~config)]
+            (doseq [[command _] ~*opts*]
+              (case command
+                :clean    (flyway/clean fw)
+                :info     (flyway/info  fw)
+                :validate (flyway/validate fw)
+                :baseline (flyway/baseline fw)
+                :repair   (flyway/repair fw)
+                "default"))))))))
