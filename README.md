@@ -42,7 +42,7 @@ To simplify all commands where driver and url is required, you may set task opti
    
 and now, you may omit ```-d``` and ```-j``` option from command line.
 
-To generate brand new migration ():
+To generate brand new migration:
 
     boot flyway -g "add_user_table"
     Created resources/db/migrations/V20150514114110__add_user_table.sql
