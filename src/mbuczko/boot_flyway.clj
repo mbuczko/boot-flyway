@@ -18,7 +18,7 @@
      (filter #(.exists %) (map #(io/file (str % "/" location)) dirs)))))
 
 (core/deftask flyway
-  "Apply/rollback flyway migrations"
+  "Evolve your Database Schema easily and reliably across all your instances."
   [d driver   DRIVER     str  "database driver"
    j url      URL        str  "jdbc url"
    u user     USER       str  "user to connect with"
