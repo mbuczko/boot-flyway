@@ -1,4 +1,6 @@
 # boot-flyway
+[![Clojars Project](http://clojars.org/mbuczko/boot-flyway/latest-version.svg)](http://clojars.org/mbuczko/boot-flyway)
+
 Flyway migrations with Clojure Boot build tool
 
 This is a simple task for [boot](https://github.com/boot-clj/boot) to generate, apply and inspect database migrations.
