@@ -17,5 +17,4 @@
       :description "Run flyway migrations in boot."
       :url "https://github.com/mbuczko/boot-flyway"
       :scm {:url "https://github.com/mbuczko/boot-flyway"}
-      :license {"name" "GNU Lesser General Public License"
-                "url" "http://www.gnu.org/licenses/lgpl.txt"}})
+      :license {"Eclipse Public License" "http://www.eclipse.org/legal/epl-v10.html"}})
