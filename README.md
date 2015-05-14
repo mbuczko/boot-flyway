@@ -44,16 +44,16 @@ and now, you may omit ```-d``` and ```-j``` option from command line.
 
 To generate brand new migration:
 
-    boot flyway -g "add_user_table"
+    $ boot flyway -g "add_user_table"
     Created resources/db/migrations/V20150514114110__add_user_table.sql
 
 To clean database:
 
-    boot flyway -c
+    $ boot flyway -c
 
 To get an information about applied / pending migrations:
 
-    boot flyway -i
+    $ boot flyway -i
     +----------------+---------------------------+---------------------+---------+
     | Version        | Description               | Installed on        | State   |
     +----------------+---------------------------+---------------------+---------+
@@ -64,7 +64,7 @@ To get an information about applied / pending migrations:
     
 To set baseline:
 
-    boot flyway -b -o baseline-version-as-string=5.2
+    $ boot flyway -b -o baseline-version-as-string=5.2
     
 
 ##LICENSE
