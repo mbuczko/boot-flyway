@@ -6,7 +6,7 @@
 This is a simple task for [boot](https://github.com/boot-clj/boot) to generate, apply and inspect database migrations.
 It's mostly a blatant copy of metaphor's [lein-flyway](https://github.com/metaphor/lein-flyway) adjusted to boot.
 
-    $ boot -h
+    $ boot flyway -h
     Evolve your Database Schema easily and reliably across all your instances.
 
     Options:
