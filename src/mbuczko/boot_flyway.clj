@@ -4,7 +4,8 @@
    [clojure.java.io :as io]
    [boot.pod        :as pod]
    [boot.core       :as core]
-   [boot.util       :as util]))
+   [boot.util       :as util]
+   [clojure.string  :as str]))
 
 (def ^:private fly-deps '[[org.flywaydb/flyway-core "3.2.1"]])
 
@@ -31,17 +32,19 @@
    r repair              bool "Repair the metadata table"
    g generate MIGRATION  str  "name of generated migration."
    o options  OPT=VAL{kw str} "additional flyway options"]
-  
+
   (let [worker (pod/make-pod (update-in (core/get-env) [:dependencies] into fly-deps))
         dataset {:driver driver
                  :url url
                  :user user
                  :password password}
-        config (merge {:locations [default-location]} options dataset)
+        config (-> {:locations default-location}
+                   (merge options dataset)
+                   (update-in [:locations] str/split #","))
         locations (:locations config)]
 
     (if generate
-      (if-let [dir (find-migrations-dir (first locations))]
+      (when-let [dir (find-migrations-dir (first locations))]
         (let [curr (.format (java.text.SimpleDateFormat. "yyyyMMddhhmmss") (java.util.Date.))
               name (str (.getPath dir) "/V" curr "__" generate ".sql")]
           (spit name "-- migration to be applied\n\n")
@@ -51,7 +54,7 @@
         (util/fail "No driver or url set\n")
         (pod/with-eval-in worker
           (require '[mbuczko.flyway :as flyway])
-          
+
           (let [fw (flyway/flyway ~config)]
             (doseq [[command _] ~*opts*]
               (case command
